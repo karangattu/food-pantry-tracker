@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Search } from "lucide-react";
 import Image from "next/image";
+import { lookupBarcodeClient } from "@/lib/open-food-facts-client";
+import { cachedFetch } from "@/lib/api-cache";
 
 interface Category {
   id: number;
@@ -50,8 +52,8 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
   const [lookingUp, setLookingUp] = useState(false);
 
   useEffect(() => {
-    fetch("/api/categories").then((r) => r.json()).then(setCategories).catch(() => {});
-    fetch("/api/locations").then((r) => r.json()).then(setLocations).catch(() => {});
+    cachedFetch<Category[]>("/api/categories").then(setCategories).catch(() => {});
+    cachedFetch<Location[]>("/api/locations").then(setLocations).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -73,8 +75,7 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
     if (!barcode.trim()) return;
     setLookingUp(true);
     try {
-      const res = await fetch(`/api/product-lookup?barcode=${encodeURIComponent(barcode)}`);
-      const data = await res.json();
+      const data = await lookupBarcodeClient(barcode);
       if (data.found) {
         if (data.name && !name) setName(data.name);
         if (data.brand && !brand) setBrand(data.brand);

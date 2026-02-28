@@ -12,15 +12,38 @@ interface BarcodeScannerProps {
 
 export function BarcodeScanner({ onScan, onError }: BarcodeScannerProps) {
   const scannerRef = useRef<unknown>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const readerElRef = useRef<HTMLDivElement | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [manualBarcode, setManualBarcode] = useState("");
   const [showManual, setShowManual] = useState(false);
+
+  // Create a standalone DOM element for html5-qrcode so React never touches it
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const el = document.createElement("div");
+    el.id = "barcode-reader";
+    container.appendChild(el);
+    readerElRef.current = el;
+    return () => {
+      // Remove the element we created on unmount
+      if (container.contains(el)) {
+        container.removeChild(el);
+      }
+      readerElRef.current = null;
+    };
+  }, []);
 
   const stopScanning = useCallback(async () => {
     if (scannerRef.current) {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await (scannerRef.current as any).stop();
+        const scanner = scannerRef.current as any;
+        if (scanner.isScanning) {
+          await scanner.stop();
+        }
+        scanner.clear();
       } catch {
         // ignore
       }
@@ -30,6 +53,9 @@ export function BarcodeScanner({ onScan, onError }: BarcodeScannerProps) {
   }, []);
 
   const startScanning = useCallback(async () => {
+    // Make sure any previous instance is cleaned up
+    await stopScanning();
+
     try {
       const { Html5Qrcode } = await import("html5-qrcode");
       const scanner = new Html5Qrcode("barcode-reader");
@@ -74,13 +100,13 @@ export function BarcodeScanner({ onScan, onError }: BarcodeScannerProps) {
       {/* Camera scanner area */}
       <div className="relative">
         <div
-          id="barcode-reader"
+          ref={containerRef}
           className="rounded-lg overflow-hidden bg-gray-900 min-h-[200px] flex items-center justify-center"
         >
           {!isScanning && (
             <div className="text-center p-6">
-              <Camera className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-400 text-sm">Camera preview will appear here</p>
+              <Camera className="h-12 w-12 text-gray-500 mx-auto mb-3" />
+              <p className="text-gray-600 text-sm">Camera preview will appear here</p>
             </div>
           )}
         </div>

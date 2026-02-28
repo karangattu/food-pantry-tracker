@@ -36,7 +36,7 @@ function DialogHeader({ className, ...props }: React.HTMLAttributes<HTMLDivEleme
 }
 
 function DialogTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn("text-lg font-semibold", className)} {...props} />;
+  return <h2 className={cn("text-lg font-semibold text-gray-900", className)} {...props} />;
 }
 
 function DialogContent({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {

@@ -108,7 +108,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
                 />
               ) : (
                 <div className="h-40 w-40 rounded-lg bg-gray-100 flex items-center justify-center">
-                  <Package className="h-16 w-16 text-gray-400" />
+                  <Package className="h-16 w-16 text-gray-500" />
                 </div>
               )}
             </div>
@@ -116,7 +116,7 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
             {/* Details */}
             <div className="flex-1 space-y-3">
               <div>
-                <h1 className="text-xl font-bold">{item.name}</h1>
+                <h1 className="text-xl font-bold text-gray-900">{item.name}</h1>
                 {item.brand && <p className="text-gray-600">{item.brand}</p>}
               </div>
 

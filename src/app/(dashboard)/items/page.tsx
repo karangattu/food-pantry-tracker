@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Plus, Package } from "lucide-react";
@@ -20,56 +20,69 @@ interface Item {
   expirationDate: string | null;
 }
 
-function ItemsList() {
+interface Category {
+  id: number;
+  name: string;
+}
+
+interface Location {
+  id: number;
+  name: string;
+}
+
+function ItemsPageContent() {
   const searchParams = useSearchParams();
   const [items, setItems] = useState<Item[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchItems() {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams(searchParams.toString());
-        const res = await fetch(`/api/items?${params.toString()}`);
-        if (res.ok) {
-          setItems(await res.json());
-        }
-      } catch {
-        // ignore
-      } finally {
-        setLoading(false);
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams(searchParams.toString());
+      const res = await fetch(`/api/items-page?${params.toString()}`);
+      if (res.ok) {
+        const data = await res.json();
+        setItems(data.items);
+        setCategories(data.categories);
+        setLocations(data.locations);
       }
+    } catch {
+      // ignore
+    } finally {
+      setLoading(false);
     }
-    fetchItems();
   }, [searchParams]);
 
-  if (loading) {
-    return (
-      <div className="space-y-2">
-        {[1, 2, 3].map((i) => (
-          <div key={i} className="h-16 rounded-lg bg-gray-200 animate-pulse" />
-        ))}
-      </div>
-    );
-  }
-
-  if (items.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-8 text-center text-gray-600">
-          <Package className="h-12 w-12 mx-auto mb-3 text-gray-400" />
-          <p>No items found</p>
-        </CardContent>
-      </Card>
-    );
-  }
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   return (
-    <div className="space-y-2">
-      {items.map((item) => (
-        <ItemCard key={item.id} {...item} />
-      ))}
-    </div>
+    <>
+      <SearchFilterBar categories={categories} locations={locations} />
+      {loading ? (
+        <div className="space-y-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-16 rounded-lg bg-gray-200 animate-pulse" />
+          ))}
+        </div>
+      ) : items.length === 0 ? (
+        <Card>
+          <CardContent className="p-8 text-center text-gray-600">
+            <Package className="h-12 w-12 mx-auto mb-3 text-gray-500" />
+            <p>No items found</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-2">
+          {items.map((item) => (
+            <ItemCard key={item.id} {...item} />
+          ))}
+        </div>
+      )}
+    </>
   );
 }
 
@@ -77,7 +90,7 @@ export default function ItemsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Inventory</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
         <Link href="/items/new">
           <Button size="sm">
             <Plus className="h-4 w-4 mr-1" />
@@ -86,8 +99,7 @@ export default function ItemsPage() {
         </Link>
       </div>
       <Suspense fallback={null}>
-        <SearchFilterBar />
-        <ItemsList />
+        <ItemsPageContent />
       </Suspense>
     </div>
   );

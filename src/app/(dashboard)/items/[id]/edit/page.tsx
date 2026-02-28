@@ -58,7 +58,7 @@ export default function EditItemPage({ params }: { params: Promise<{ id: string 
         <ArrowLeft className="h-4 w-4 mr-1" />
         Back
       </Link>
-      <h1 className="text-2xl font-bold">Edit Item</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Edit Item</h1>
       <Card>
         <CardContent className="pt-6">
           <ItemForm

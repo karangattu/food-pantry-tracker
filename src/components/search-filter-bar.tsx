@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Search } from "lucide-react";
+import { cachedFetch } from "@/lib/api-cache";
 
 interface Category {
   id: number;
@@ -16,20 +17,30 @@ interface Location {
   name: string;
 }
 
-export function SearchFilterBar() {
+interface SearchFilterBarProps {
+  categories?: Category[];
+  locations?: Location[];
+}
+
+export function SearchFilterBar({ categories: propCategories, locations: propLocations }: SearchFilterBarProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [categoryId, setCategoryId] = useState(searchParams.get("categoryId") || "");
   const [locationId, setLocationId] = useState(searchParams.get("locationId") || "");
   const [expiring, setExpiring] = useState(searchParams.get("expiring") || "");
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [locations, setLocations] = useState<Location[]>([]);
+  const [categories, setCategories] = useState<Category[]>(propCategories || []);
+  const [locations, setLocations] = useState<Location[]>(propLocations || []);
 
   useEffect(() => {
-    fetch("/api/categories").then((r) => r.json()).then(setCategories).catch(() => {});
-    fetch("/api/locations").then((r) => r.json()).then(setLocations).catch(() => {});
-  }, []);
+    // Skip fetch if categories/locations were provided as props
+    if (!propCategories) {
+      cachedFetch<Category[]>("/api/categories").then(setCategories).catch(() => {});
+    }
+    if (!propLocations) {
+      cachedFetch<Location[]>("/api/locations").then(setLocations).catch(() => {});
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const updateParams = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());

@@ -38,28 +38,14 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const [itemsRes, alertsRes, expiringSoonRes, expiredRes] = await Promise.all([
-          fetch("/api/items"),
-          fetch("/api/alerts"),
-          fetch("/api/items?expiring=soon"),
-          fetch("/api/items?expiring=expired"),
-        ]);
-
-        if (itemsRes.ok) {
-          const data = await itemsRes.json();
-          setItems(data.slice(0, 5));
-          setTotalCount(data.length);
-        }
-        if (alertsRes.ok) {
-          setAlerts(await alertsRes.json());
-        }
-        if (expiringSoonRes.ok) {
-          const data = await expiringSoonRes.json();
-          setExpiringCount(data.length);
-        }
-        if (expiredRes.ok) {
-          const data = await expiredRes.json();
-          setExpiredCount(data.length);
+        const res = await fetch("/api/dashboard");
+        if (res.ok) {
+          const data = await res.json();
+          setItems(data.recentItems);
+          setTotalCount(data.totalCount);
+          setExpiringCount(data.expiringCount);
+          setExpiredCount(data.expiredCount);
+          setAlerts(data.alerts);
         }
       } catch {
         // ignore
@@ -77,7 +63,7 @@ export default function DashboardPage() {
   if (loading) {
     return (
       <div className="space-y-4">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="h-24 rounded-lg bg-gray-200 animate-pulse" />
@@ -89,7 +75,7 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Dashboard</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
 
       <AlertBanner items={alerts} onDismiss={handleDismissAlert} />
 
@@ -98,10 +84,10 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between p-4">
             <CardTitle className="text-sm font-medium text-gray-600">Total Items</CardTitle>
-            <Package className="h-4 w-4 text-gray-500" />
+            <Package className="h-4 w-4 text-gray-600" />
           </CardHeader>
           <CardContent className="p-4 pt-0">
-            <div className="text-3xl font-bold">{totalCount}</div>
+            <div className="text-3xl font-bold text-gray-900">{totalCount}</div>
           </CardContent>
         </Card>
         <Card>
@@ -143,7 +129,7 @@ export default function DashboardPage() {
       {/* Recent Items */}
       <div>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold">Recent Items</h2>
+          <h2 className="text-lg font-semibold text-gray-900">Recent Items</h2>
           <Link href="/items" className="text-sm text-green-600 hover:text-green-500">
             View all
           </Link>
@@ -151,7 +137,7 @@ export default function DashboardPage() {
         {items.length === 0 ? (
           <Card>
             <CardContent className="p-8 text-center text-gray-600">
-              <Package className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+              <Package className="h-12 w-12 mx-auto mb-3 text-gray-500" />
               <p>No items yet. Scan or add your first item!</p>
             </CardContent>
           </Card>

@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ItemForm } from "@/components/item-form";
 import { Card, CardContent } from "@/components/ui/card";
+import { lookupBarcodeClient } from "@/lib/open-food-facts-client";
 
 function NewItemForm() {
   const router = useRouter();
@@ -17,8 +18,7 @@ function NewItemForm() {
     if (barcode) {
       setLookingUp(true);
       setInitialData({ barcode });
-      fetch(`/api/product-lookup?barcode=${encodeURIComponent(barcode)}`)
-        .then((r) => r.json())
+      lookupBarcodeClient(barcode)
         .then((data) => {
           if (data.found) {
             setInitialData({
@@ -67,7 +67,7 @@ function NewItemForm() {
 export default function NewItemPage() {
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Add Item</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Add Item</h1>
       <Card>
         <CardContent className="pt-6">
           <Suspense fallback={<div className="h-96 animate-pulse bg-gray-100 rounded" />}>

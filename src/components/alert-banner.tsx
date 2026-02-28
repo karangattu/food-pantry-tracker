@@ -61,7 +61,7 @@ export function AlertBanner({ items, onDismiss }: AlertBannerProps) {
             <button
               onClick={() => handleDismiss(item.id)}
               disabled={dismissing === item.id}
-              className="ml-2 p-1 text-gray-500 hover:text-gray-700 flex-shrink-0"
+              className="ml-2 p-1 text-gray-600 hover:text-gray-700 flex-shrink-0"
             >
               <X className="h-4 w-4" />
             </button>

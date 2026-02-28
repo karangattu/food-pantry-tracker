@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { invalidateCache } from "@/lib/api-cache";
 
 interface Category {
   id: number;
@@ -44,6 +45,7 @@ export default function CategoriesPage() {
       });
       if (res.ok) {
         setNewName("");
+        invalidateCache("/api/categories");
         fetchCategories();
       }
     } catch {
@@ -61,6 +63,7 @@ export default function CategoriesPage() {
       });
       if (res.ok) {
         setEditId(null);
+        invalidateCache("/api/categories");
         fetchCategories();
       }
     } catch {
@@ -72,6 +75,7 @@ export default function CategoriesPage() {
     if (!confirm("Delete this category?")) return;
     try {
       await fetch(`/api/categories/${id}`, { method: "DELETE" });
+      invalidateCache("/api/categories");
       fetchCategories();
     } catch {
       // ignore
@@ -80,7 +84,7 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Categories</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
 
       <form onSubmit={handleAdd} className="flex gap-2">
         <Input
@@ -121,7 +125,7 @@ export default function CategoriesPage() {
                         <Check className="h-4 w-4 text-green-600" />
                       </Button>
                       <Button size="icon" variant="ghost" onClick={() => setEditId(null)}>
-                        <X className="h-4 w-4 text-gray-500" />
+                        <X className="h-4 w-4 text-gray-600" />
                       </Button>
                     </div>
                   ) : (
@@ -136,7 +140,7 @@ export default function CategoriesPage() {
                             setEditName(cat.name);
                           }}
                         >
-                          <Pencil className="h-4 w-4 text-gray-500" />
+                          <Pencil className="h-4 w-4 text-gray-600" />
                         </Button>
                         <Button size="icon" variant="ghost" onClick={() => handleDelete(cat.id)}>
                           <Trash2 className="h-4 w-4 text-red-400" />

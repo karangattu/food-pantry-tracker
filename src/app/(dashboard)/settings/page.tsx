@@ -20,7 +20,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Settings</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
 
       {/* Account Info */}
       <Card>
@@ -72,7 +72,7 @@ export default function SettingsPage() {
               <FileText className="h-4 w-4 text-gray-600" />
               <span>Changelog</span>
             </div>
-            <ChevronRight className="h-4 w-4 text-gray-500" />
+            <ChevronRight className="h-4 w-4 text-gray-600" />
           </Link>
         </CardContent>
       </Card>

@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
       .select()
       .from(storageLocations)
       .orderBy(asc(storageLocations.name));
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "private, max-age=300, stale-while-revalidate=600" },
+    });
   } catch (error) {
     console.error("Error fetching locations:", error);
     return NextResponse.json({ error: "Failed to fetch locations" }, { status: 500 });

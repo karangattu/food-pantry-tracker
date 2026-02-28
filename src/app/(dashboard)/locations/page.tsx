@@ -5,6 +5,7 @@ import { Plus, Pencil, Trash2, Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { invalidateCache } from "@/lib/api-cache";
 
 interface Location {
   id: number;
@@ -44,6 +45,7 @@ export default function LocationsPage() {
       });
       if (res.ok) {
         setNewName("");
+        invalidateCache("/api/locations");
         fetchLocations();
       }
     } catch {
@@ -61,6 +63,7 @@ export default function LocationsPage() {
       });
       if (res.ok) {
         setEditId(null);
+        invalidateCache("/api/locations");
         fetchLocations();
       }
     } catch {
@@ -72,6 +75,7 @@ export default function LocationsPage() {
     if (!confirm("Delete this location?")) return;
     try {
       await fetch(`/api/locations/${id}`, { method: "DELETE" });
+      invalidateCache("/api/locations");
       fetchLocations();
     } catch {
       // ignore
@@ -80,7 +84,7 @@ export default function LocationsPage() {
 
   return (
     <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Storage Locations</h1>
+      <h1 className="text-2xl font-bold text-gray-900">Storage Locations</h1>
 
       <form onSubmit={handleAdd} className="flex gap-2">
         <Input
@@ -121,7 +125,7 @@ export default function LocationsPage() {
                         <Check className="h-4 w-4 text-green-600" />
                       </Button>
                       <Button size="icon" variant="ghost" onClick={() => setEditId(null)}>
-                        <X className="h-4 w-4 text-gray-500" />
+                        <X className="h-4 w-4 text-gray-600" />
                       </Button>
                     </div>
                   ) : (
@@ -136,7 +140,7 @@ export default function LocationsPage() {
                             setEditName(loc.name);
                           }}
                         >
-                          <Pencil className="h-4 w-4 text-gray-500" />
+                          <Pencil className="h-4 w-4 text-gray-600" />
                         </Button>
                         <Button size="icon" variant="ghost" onClick={() => handleDelete(loc.id)}>
                           <Trash2 className="h-4 w-4 text-red-400" />

@@ -76,7 +76,9 @@ export async function GET(request: NextRequest) {
       .where(where)
       .orderBy(desc(items.createdAt));
 
-    return NextResponse.json(result);
+    return NextResponse.json(result, {
+      headers: { "Cache-Control": "private, max-age=15, stale-while-revalidate=30" },
+    });
   } catch (error) {
     console.error("Error fetching items:", error);
     return NextResponse.json({ error: "Failed to fetch items" }, { status: 500 });
