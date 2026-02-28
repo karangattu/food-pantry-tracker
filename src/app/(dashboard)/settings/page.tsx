@@ -33,7 +33,7 @@ export default function SettingsPage() {
               <User className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="font-medium">{session?.user?.name || "User"}</p>
+              <p className="font-medium text-gray-900">{session?.user?.name || "User"}</p>
               <p className="text-sm text-gray-600">{session?.user?.email || ""}</p>
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-2">
               <FileText className="h-4 w-4 text-gray-600" />
-              <span>Changelog</span>
+              <span className="text-gray-900">Changelog</span>
             </div>
             <ChevronRight className="h-4 w-4 text-gray-600" />
           </Link>

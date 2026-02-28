@@ -130,7 +130,7 @@ export default function LocationsPage() {
                     </div>
                   ) : (
                     <>
-                      <span className="text-sm font-medium">{loc.name}</span>
+                      <span className="text-sm font-medium text-gray-900">{loc.name}</span>
                       <div className="flex gap-1">
                         <Button
                           size="icon"

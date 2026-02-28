@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Search } from "lucide-react";
-import Image from "next/image";
+import { Search, Upload, X } from "lucide-react";
 import { lookupBarcodeClient } from "@/lib/open-food-facts-client";
 import { cachedFetch } from "@/lib/api-cache";
+import { compressImage, getBase64Size, formatBytes } from "@/lib/image-utils";
 
 interface Category {
   id: number;
@@ -25,6 +25,7 @@ interface ItemFormProps {
     name?: string;
     brand?: string;
     imageUrl?: string;
+    imageData?: string;
     quantity?: number;
     unit?: string;
     categoryId?: number;
@@ -41,6 +42,7 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
   const [name, setName] = useState(initialData?.name || "");
   const [brand, setBrand] = useState(initialData?.brand || "");
   const [imageUrl, setImageUrl] = useState(initialData?.imageUrl || "");
+  const [imageData, setImageData] = useState(initialData?.imageData || "");
   const [quantity, setQuantity] = useState(initialData?.quantity || 1);
   const [unit, setUnit] = useState(initialData?.unit || "");
   const [categoryId, setCategoryId] = useState<number | "">(initialData?.categoryId || "");
@@ -50,6 +52,7 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
   const [categories, setCategories] = useState<Category[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [lookingUp, setLookingUp] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   useEffect(() => {
     cachedFetch<Category[]>("/api/categories").then(setCategories).catch(() => {});
@@ -62,6 +65,7 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
       if (initialData.name) setName(initialData.name);
       if (initialData.brand) setBrand(initialData.brand);
       if (initialData.imageUrl) setImageUrl(initialData.imageUrl);
+      if (initialData.imageData) setImageData(initialData.imageData);
       if (initialData.quantity) setQuantity(initialData.quantity);
       if (initialData.unit) setUnit(initialData.unit);
       if (initialData.categoryId) setCategoryId(initialData.categoryId);
@@ -95,6 +99,7 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
       name,
       brand: brand || null,
       imageUrl: imageUrl || null,
+      imageData: imageData || null,
       quantity,
       unit: unit || null,
       categoryId: categoryId || null,
@@ -122,19 +127,62 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
         </div>
       </div>
 
-      {/* Image preview */}
-      {imageUrl && (
-        <div className="flex justify-center">
-          <Image
-            src={imageUrl}
-            alt={name || "Product"}
-            width={120}
-            height={120}
-            className="rounded-md object-contain"
-            unoptimized
-          />
-        </div>
-      )}
+      {/* Image upload / preview */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Product Photo</label>
+        {(imageData || imageUrl) ? (
+          <div className="flex flex-col items-center gap-2">
+            <div className="relative">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={imageData || imageUrl}
+                alt={name || "Product"}
+                className="h-32 w-32 rounded-md object-contain border border-gray-200"
+              />
+              <button
+                type="button"
+                onClick={() => { setImageData(""); setImageUrl(""); }}
+                className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+                title="Remove image"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+            {imageData && (
+              <p className="text-xs text-gray-500">
+                Compressed: {formatBytes(getBase64Size(imageData))}
+              </p>
+            )}
+          </div>
+        ) : (
+          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-green-400 hover:bg-green-50 transition-colors">
+            <Upload className="h-8 w-8 text-gray-400 mb-1" />
+            <span className="text-sm text-gray-500">
+              {compressing ? "Compressing..." : "Tap to upload photo"}
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setCompressing(true);
+                try {
+                  const compressed = await compressImage(file);
+                  setImageData(compressed);
+                  setImageUrl(""); // clear external URL if user uploads their own
+                } catch {
+                  // ignore
+                } finally {
+                  setCompressing(false);
+                }
+              }}
+            />
+          </label>
+        )}
+      </div>
 
       {/* Name */}
       <div>
@@ -205,7 +253,7 @@ export function ItemForm({ initialData, onSubmit, isLoading }: ItemFormProps) {
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Optional notes..."
-          className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-h-[80px]"
+          className="flex w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent min-h-[80px]"
         />
       </div>
 

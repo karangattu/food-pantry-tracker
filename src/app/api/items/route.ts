@@ -60,6 +60,7 @@ export async function GET(request: NextRequest) {
         name: items.name,
         brand: items.brand,
         imageUrl: items.imageUrl,
+        imageData: items.imageData,
         quantity: items.quantity,
         unit: items.unit,
         categoryId: items.categoryId,
@@ -93,7 +94,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { barcode, name, brand, imageUrl, quantity, unit, categoryId, locationId, expirationDate, notes } = body;
+    const { barcode, name, brand, imageUrl, imageData, quantity, unit, categoryId, locationId, expirationDate, notes } = body;
 
     if (!name) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
@@ -104,6 +105,7 @@ export async function POST(request: NextRequest) {
       name,
       brand: brand || null,
       imageUrl: imageUrl || null,
+      imageData: imageData || null,
       quantity: quantity || 1,
       unit: unit || null,
       categoryId: categoryId || null,

@@ -67,6 +67,7 @@ export async function GET(request: NextRequest) {
           name: items.name,
           brand: items.brand,
           imageUrl: items.imageUrl,
+          imageData: items.imageData,
           quantity: items.quantity,
           unit: items.unit,
           categoryId: items.categoryId,

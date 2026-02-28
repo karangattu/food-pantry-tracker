@@ -13,6 +13,7 @@ interface DashboardItem {
   name: string;
   brand: string | null;
   imageUrl: string | null;
+  imageData: string | null;
   quantity: number;
   unit: string | null;
   locationName: string | null;

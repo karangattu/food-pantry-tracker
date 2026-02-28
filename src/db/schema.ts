@@ -77,6 +77,7 @@ export const items = sqliteTable("items", {
   name: text("name").notNull(),
   brand: text("brand"),
   imageUrl: text("image_url"),
+  imageData: text("image_data"), // base64 data URI for user-uploaded photos
   quantity: integer("quantity").notNull().default(1),
   unit: text("unit"),
   categoryId: integer("category_id").references(() => categories.id, {

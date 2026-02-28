@@ -130,7 +130,7 @@ export default function CategoriesPage() {
                     </div>
                   ) : (
                     <>
-                      <span className="text-sm font-medium">{cat.name}</span>
+                      <span className="text-sm font-medium text-gray-900">{cat.name}</span>
                       <div className="flex gap-1">
                         <Button
                           size="icon"

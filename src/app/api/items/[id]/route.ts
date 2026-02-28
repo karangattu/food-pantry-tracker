@@ -22,6 +22,7 @@ export async function GET(
         name: items.name,
         brand: items.brand,
         imageUrl: items.imageUrl,
+        imageData: items.imageData,
         quantity: items.quantity,
         unit: items.unit,
         categoryId: items.categoryId,
@@ -63,7 +64,7 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { barcode, name, brand, imageUrl, quantity, unit, categoryId, locationId, expirationDate, notes } = body;
+    const { barcode, name, brand, imageUrl, imageData, quantity, unit, categoryId, locationId, expirationDate, notes } = body;
 
     const result = await db
       .update(items)
@@ -72,6 +73,7 @@ export async function PUT(
         name,
         brand: brand || null,
         imageUrl: imageUrl || null,
+        imageData: imageData === undefined ? undefined : (imageData || null),
         quantity: quantity || 1,
         unit: unit || null,
         categoryId: categoryId || null,

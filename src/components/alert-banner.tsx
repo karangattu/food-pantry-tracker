@@ -52,7 +52,7 @@ export function AlertBanner({ items, onDismiss }: AlertBannerProps) {
             className="flex items-center justify-between bg-white rounded-md border border-orange-100 px-3 py-2"
           >
             <div className="flex items-center gap-3 min-w-0">
-              <span className="font-medium text-sm truncate">{item.name}</span>
+              <span className="font-medium text-sm text-gray-900 truncate">{item.name}</span>
               {item.brand && (
                 <span className="text-xs text-gray-600 hidden sm:inline">({item.brand})</span>
               )}

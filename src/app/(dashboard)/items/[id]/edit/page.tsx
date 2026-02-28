@@ -67,6 +67,7 @@ export default function EditItemPage({ params }: { params: Promise<{ id: string 
               name: item.name as string | undefined,
               brand: item.brand as string | undefined,
               imageUrl: item.imageUrl as string | undefined,
+              imageData: item.imageData as string | undefined,
               quantity: item.quantity as number | undefined,
               unit: item.unit as string | undefined,
               categoryId: item.categoryId as number | undefined,

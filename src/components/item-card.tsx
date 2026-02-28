@@ -3,13 +3,13 @@
 import Link from "next/link";
 import { Package } from "lucide-react";
 import { ExpiryBadge } from "@/components/expiry-badge";
-import Image from "next/image";
 
 interface ItemCardProps {
   id: number;
   name: string;
   brand: string | null;
   imageUrl: string | null;
+  imageData?: string | null;
   quantity: number;
   unit: string | null;
   locationName: string | null;
@@ -21,11 +21,13 @@ export function ItemCard({
   name,
   brand,
   imageUrl,
+  imageData,
   quantity,
   unit,
   locationName,
   expirationDate,
 }: ItemCardProps) {
+  const imgSrc = imageData || imageUrl;
   return (
     <Link
       href={`/items/${id}`}
@@ -33,14 +35,12 @@ export function ItemCard({
     >
       {/* Image/Icon */}
       <div className="h-12 w-12 flex-shrink-0 rounded-md bg-gray-100 flex items-center justify-center overflow-hidden">
-        {imageUrl ? (
-          <Image
-            src={imageUrl}
+        {imgSrc ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={imgSrc}
             alt={name}
-            width={48}
-            height={48}
-            className="object-contain"
-            unoptimized
+            className="h-12 w-12 object-contain"
           />
         ) : (
           <Package className="h-6 w-6 text-gray-500" />
@@ -50,7 +50,7 @@ export function ItemCard({
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className="font-medium text-sm truncate">{name}</span>
+          <span className="font-medium text-sm text-gray-900 truncate">{name}</span>
         </div>
         <div className="flex items-center gap-2 mt-0.5">
           {brand && <span className="text-xs text-gray-600 truncate">{brand}</span>}

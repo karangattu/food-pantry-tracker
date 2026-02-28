@@ -3,7 +3,6 @@
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, Pencil, Trash2, Package } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -17,6 +16,7 @@ interface ItemDetail {
   name: string;
   brand: string | null;
   imageUrl: string | null;
+  imageData: string | null;
   quantity: number;
   unit: string | null;
   categoryName: string | null;
@@ -97,14 +97,12 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
           <div className="flex flex-col sm:flex-row gap-6">
             {/* Image */}
             <div className="flex-shrink-0 mx-auto sm:mx-0">
-              {item.imageUrl ? (
-                <Image
-                  src={item.imageUrl}
+              {(item.imageData || item.imageUrl) ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={item.imageData || item.imageUrl || ""}
                   alt={item.name}
-                  width={160}
-                  height={160}
-                  className="rounded-lg object-contain"
-                  unoptimized
+                  className="h-40 w-40 rounded-lg object-contain"
                 />
               ) : (
                 <div className="h-40 w-40 rounded-lg bg-gray-100 flex items-center justify-center">
@@ -125,42 +123,42 @@ export default function ItemDetailPage({ params }: { params: Promise<{ id: strin
               <div className="grid grid-cols-2 gap-3 text-sm">
                 <div>
                   <span className="text-gray-600">Quantity</span>
-                  <p className="font-medium">{item.quantity} {item.unit || ""}</p>
+                  <p className="font-medium text-gray-900">{item.quantity} {item.unit || ""}</p>
                 </div>
                 {item.categoryName && (
                   <div>
                     <span className="text-gray-600">Category</span>
-                    <p className="font-medium">{item.categoryName}</p>
+                    <p className="font-medium text-gray-900">{item.categoryName}</p>
                   </div>
                 )}
                 {item.locationName && (
                   <div>
                     <span className="text-gray-600">Location</span>
-                    <p className="font-medium">{item.locationName}</p>
+                    <p className="font-medium text-gray-900">{item.locationName}</p>
                   </div>
                 )}
                 {item.expirationDate && (
                   <div>
                     <span className="text-gray-600">Expiration</span>
-                    <p className="font-medium">{formatExpirationDate(item.expirationDate)}</p>
+                    <p className="font-medium text-gray-900">{formatExpirationDate(item.expirationDate)}</p>
                   </div>
                 )}
                 {item.barcode && (
                   <div>
                     <span className="text-gray-600">Barcode</span>
-                    <p className="font-medium font-mono text-xs">{item.barcode}</p>
+                    <p className="font-medium font-mono text-xs text-gray-900">{item.barcode}</p>
                   </div>
                 )}
                 <div>
                   <span className="text-gray-600">Added</span>
-                  <p className="font-medium">{item.createdAt}</p>
+                  <p className="font-medium text-gray-900">{item.createdAt}</p>
                 </div>
               </div>
 
               {item.notes && (
                 <div>
                   <span className="text-gray-600 text-sm">Notes</span>
-                  <p className="text-sm mt-1">{item.notes}</p>
+                  <p className="text-sm mt-1 text-gray-900">{item.notes}</p>
                 </div>
               )}
             </div>
