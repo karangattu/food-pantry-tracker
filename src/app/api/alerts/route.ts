@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const today = format(new Date(), "yyyy-MM-dd");
     const weekFromNow = format(addDays(new Date(), 7), "yyyy-MM-dd");
 
     // Get dismissed item IDs for this user
@@ -24,7 +23,7 @@ export async function GET(request: NextRequest) {
     const dismissedIds = dismissed.map((d) => d.itemId);
 
     // Get items expiring within 7 days or already expired
-    let query = db
+    const query = db
       .select({
         id: items.id,
         name: items.name,

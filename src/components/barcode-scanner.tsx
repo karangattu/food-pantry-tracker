@@ -50,7 +50,7 @@ export function BarcodeScanner({ onScan, onError }: BarcodeScannerProps) {
         }
       );
       setIsScanning(true);
-    } catch (err) {
+    } catch {
       onError?.("Camera access denied or unavailable. Try manual entry.");
       setShowManual(true);
     }

@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { addDays, subDays, format } from "date-fns";
 import {
   getDaysUntilExpiry,
   getExpiryStatus,
@@ -8,13 +7,8 @@ import {
   formatExpirationDate,
 } from "@/lib/expiry-utils";
 
-function toDateStr(date: Date): string {
-  return format(date, "yyyy-MM-dd");
-}
-
 describe("expiry-utils", () => {
   // Use a fixed "today" for deterministic tests
-  const realDate = Date;
   const fixedNow = new Date("2025-06-15T12:00:00Z");
 
   beforeEach(() => {

@@ -2,26 +2,25 @@
 
 import { useState, useEffect, useCallback } from "react";
 
+function checkSupported() {
+  return typeof window !== "undefined" && "serviceWorker" in navigator && "PushManager" in window;
+}
+
 export function usePushNotifications() {
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [isSupported, setIsSupported] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isSupported] = useState(checkSupported);
+  const [isLoading, setIsLoading] = useState(() => checkSupported());
 
   useEffect(() => {
-    const supported = "serviceWorker" in navigator && "PushManager" in window;
-    setIsSupported(supported);
+    if (!isSupported) return;
 
-    if (supported) {
-      navigator.serviceWorker.ready.then((reg) => {
-        reg.pushManager.getSubscription().then((sub) => {
-          setIsSubscribed(!!sub);
-          setIsLoading(false);
-        });
+    navigator.serviceWorker.ready.then((reg) => {
+      reg.pushManager.getSubscription().then((sub) => {
+        setIsSubscribed(!!sub);
+        setIsLoading(false);
       });
-    } else {
-      setIsLoading(false);
-    }
-  }, []);
+    });
+  }, [isSupported]);
 
   const subscribe = useCallback(async () => {
     try {
